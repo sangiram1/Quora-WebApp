@@ -24,7 +24,10 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
+            <!-- Modified by Sangeeta as part of creating UserEntity class -->
+            <!-- To use @ToStringExclude Annotation, higher version of this library is needed -->
+            <!-- <version>3.4</version> -->
+            <version>3.7</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
