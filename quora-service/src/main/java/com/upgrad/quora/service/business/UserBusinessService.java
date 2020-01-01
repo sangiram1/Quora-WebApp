@@ -78,6 +78,24 @@ public class UserBusinessService {
     }
 
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    public UserAuthEntity accessTokenValidation(String accessToken) throws SignOutRestrictedException {
+        UserAuthEntity userAuthEntity = userDao.verifyToken(accessToken);
+
+        if (userAuthEntity == null) {
+            throw new SignOutRestrictedException("SGR-001", "User is not Signed in");
+
+        } else {
+            final ZonedDateTime now = ZonedDateTime.now();
+            userAuthEntity.setLogoutAt(now);
+            return userAuthEntity;
+        }
+
+
+
+    }
+
+
 
 
 
