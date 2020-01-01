@@ -39,6 +39,13 @@ public class UserDao {
         }
     }
 
+    public void createToken(UserAuthEntity userAuthEntity) {
+        entityManager.persist(userAuthEntity);
+    }
+
+
+
+
 
 
 }
