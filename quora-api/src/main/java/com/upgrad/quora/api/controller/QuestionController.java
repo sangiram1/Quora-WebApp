@@ -86,4 +86,31 @@ public class QuestionController {
     /* Return the details of questions in the form of responseList and a Httpstatus.OK to client */
     return new ResponseEntity<List<QuestionDetailsResponse>>(questionResponseList, HttpStatus.OK);
   }
+
+  /* editQuestionContent() represents an endpoint to serve /question/edit/{questionId} request
+   * This method would take three inpits: the authorization string from the Request Header,
+   * the questionId of the question to be edited
+   * and the questionRequest holding the updated details of the question
+   * If the authorization and the UUID of the question is valid, then the method would update the
+   * details of the given question and persist it to the database.
+   */
+  @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}",
+      consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public ResponseEntity<QuestionEditResponse> editQuestionContent(@RequestHeader("authorization")
+  final String authorization, @PathVariable("questionId") final String questionId,
+      final QuestionEditRequest questionEditRequest)
+      throws AuthorizationFailedException, InvalidQuestionException {
+    /* Call the editQuestionContent from service to update the question with given content */
+    String questionContent = questionEditRequest.getContent();
+    QuestionEntity updatedQuestion = questionService.editQuestionContent(questionId,
+        questionContent, authorization);
+
+    /* Once the question is updated, prepare the response with UUID and a status message */
+    QuestionEditResponse questionEditResponse = new QuestionEditResponse();
+    questionEditResponse.id(updatedQuestion.getUuid()).status("QUESTION EDITED");
+    /* return the response object back to the client*/
+    return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
+  }
+
+  /* Upma to add the remaining two endpoints - deleteQuestion() and getAllQuestionsByUser() */
 }

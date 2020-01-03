@@ -85,4 +85,48 @@ public class QuestionService {
     return questionEntities;
   }
 
+  /* editQuestionContent() method would facilitate the update of a given question
+   * This method would take three inputs : the authorization string for user authorization
+   * and a questionId of a question to be edited and the content to be updated.
+   * First, authorization is checked using the AuthorizationService and then questionId is validated
+   * Also, the owner is validated against the logged in user to allow the update.
+   * Details of the question will be updated to database if authorization and question holds good
+   * It would return the updated object back to the calling controller.
+   */
+  @Transactional(propagation = Propagation.REQUIRED)
+  public QuestionEntity editQuestionContent(final String questionId, final String questionContent,
+      final String authorization) throws AuthorizationFailedException, InvalidQuestionException {
+
+    /* Check if the authorization/accessToken provided is valid or not. It will check the below:
+     *  1.1. User has provided valid access token
+     *  1.2. User has not signed out.
+     */
+    UserAuthEntity userAuthToken = authorizationService.checkAuthorization(authorization,
+        "User is signed out.Sign in first to edit the question");
+
+    /* Check if the given question is valid. Throw exception if the question doesn't exist */
+    QuestionEntity questionToBeUpdated = questionDao.getQuestion(questionId);
+    if (questionToBeUpdated == null) {
+      throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
+    }
+
+    /* Check if the logged-in user and the owner of the question is same */
+    final String questionOwner = questionToBeUpdated.getUser().getUuid();
+    final String loggedInUser = userAuthToken.getUser().getUuid();
+    /* Merge the changes to the question if the owner and logged in user are the same
+     * Else, throw exception that only owner of the question can edit
+     */
+    if (questionOwner.equals(loggedInUser)) {
+      questionToBeUpdated.setContent(questionContent);
+      QuestionEntity updatedQuestion = questionDao.updateQuestion(questionToBeUpdated);
+      /* Return the updated questionEntity object back to the calling controller */
+      return updatedQuestion;
+    } else {
+      throw new AuthorizationFailedException("ATHR-003", "Only the question owner can edit the "
+          + "question");
+    }
+  }
+
+  /* Upma to add the remaining two functions - deleteQuestion() and getAllQuestionsByUser() */
+
 }
