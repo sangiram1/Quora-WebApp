@@ -4,8 +4,10 @@ import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
+import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
+import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -22,6 +24,15 @@ public class UserBusinessService {
 
     @Autowired
     private PasswordCryptographyProvider cryptographyProvider;
+
+  /* Added by Sangeeta as part of implementing getUserDetails functionality
+   * Here, autowiring the authorizationService instance.
+   * AuthorizationService is a class which would validate the below conditions:
+   * 1. User has provided a valid access token
+   * 2. User has not signed out.
+   */
+  @Autowired
+  private AuthorizationService authorizationService;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public UserEntity createUser(UserEntity userEntity) throws SignUpRestrictedException {
@@ -95,8 +106,28 @@ public class UserBusinessService {
 
     }
 
+  /* Added by Sangeeta as part of implementing the getUserDetails functionality
+   * This method will take the userId and authorization as input and does the following:
+   * 1. Check if the authorization/accessToken provided is valid or not. It will check the below:
+   *    1.1. User has provided valid access token
+   *    1.2. User has not signed out.
+   * 2. Based on the given UUID, pull the user details and return the same to the controller.
+   * 3. If user with given UUID doesn't exist, throw UserNotFoundException to controller.
+   */
+  public UserEntity getUserDetails(final String userId, final String authorization)
+      throws AuthorizationFailedException, UserNotFoundException {
+    /* Check if the Authorization is valid or not */
+    UserAuthEntity userAuthEntity = authorizationService.checkAuthorization(authorization,
+        "User is signed out.Sign in first to get user details");
 
+    /* Based on the given userId, get the user details and return to the controller */
+    UserEntity userDetails = userDao.getUserDetails(userId);
 
-
+    /* If the user doesn't exist, throw exception */
+    if (userDetails == null) {
+      throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
+    }
+    return userDetails;
+  }
 
 }
