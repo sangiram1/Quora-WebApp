@@ -69,4 +69,21 @@ public class QuestionController {
     return new ResponseEntity<QuestionResponse>(questionResponse, HttpStatus.CREATED);
   }
 
+  @RequestMapping(method = RequestMethod.GET, path = "/question/all",
+      produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization")
+  final String authorization) throws AuthorizationFailedException {
+    /* Get the list of all the questions from database if the authorization holds good. */
+    List<QuestionEntity> questionEntities = questionService.getAllQuestions(authorization);
+
+    /* Prepare the response with the required details from database and create a response list */
+    List<QuestionDetailsResponse> questionResponseList = new LinkedList<QuestionDetailsResponse>();
+    for (QuestionEntity question: questionEntities) {
+      QuestionDetailsResponse questionDetailsResponse = new QuestionDetailsResponse();
+      questionDetailsResponse.id(question.getUuid()).content(question.getContent());
+      questionResponseList.add(questionDetailsResponse);
+    }
+    /* Return the details of questions in the form of responseList and a Httpstatus.OK to client */
+    return new ResponseEntity<List<QuestionDetailsResponse>>(questionResponseList, HttpStatus.OK);
+  }
 }

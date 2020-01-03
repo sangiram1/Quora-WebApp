@@ -65,4 +65,24 @@ public class QuestionService {
     return createdQuestion;
   }
 
+  /* getAllQuestions() method would furnish the details of all the questions
+   * This method would take the authorization string as input for user authorization
+   * If the authorization provided is valid, then the getAllQuestions method would furnish the
+   * details of all the questions from the database.
+   */
+  public List<QuestionEntity> getAllQuestions(final String authorization)
+      throws AuthorizationFailedException {
+
+    /* Check if the authorization/accessToken provided is valid or not. It will check the below:
+     *  1.1. User has provided valid access token
+     *  1.2. User has not signed out.
+     */
+    UserAuthEntity userAuthToken = authorizationService.checkAuthorization(authorization,
+        "User is signed out.Sign in first to get all questions");
+
+    /* Get the list of all the questions and return the same to the calling controller */
+    List<QuestionEntity> questionEntities = questionDao.getAllQuestions();
+    return questionEntities;
+  }
+
 }

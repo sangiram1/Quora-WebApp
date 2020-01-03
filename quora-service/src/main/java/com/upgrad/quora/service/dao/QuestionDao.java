@@ -37,4 +37,14 @@ public class QuestionDao {
     return questionEntity;
   }
 
+  /* getAllQuestions() method would fetch the details of all the questions
+   * It uses the NamedQuery getAllQuestions and return a list of all questions
+   * The questionEntities list is returned to the service layer.
+   */
+  public List<QuestionEntity> getAllQuestions() {
+    /* Get List of all questions from the database using the given query */
+    List<QuestionEntity> questionEntities = entityManager
+        .createNamedQuery("getAllQuestions", QuestionEntity.class).getResultList();
+    return questionEntities;
+  }
 }
