@@ -74,12 +74,14 @@ public class QuestionDao {
         return questionToBeUpdated;
     }
 
+    //This method deletes the question from database after validation and returns the questionEntity object.
     public QuestionEntity deleteQuestion(QuestionEntity questionEntity) {
         entityManager.remove(questionEntity);
         return questionEntity;
 
     }
 
+    //This method returns all the questions posted by a user.
     public List<QuestionEntity> getAllQuestionByUser(String userId) {
         try {
             return entityManager.createNamedQuery("getAllQuestionsByUser", QuestionEntity.class).setParameter("userId", userId).getResultList();
