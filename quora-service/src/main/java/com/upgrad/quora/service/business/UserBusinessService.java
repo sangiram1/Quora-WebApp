@@ -105,7 +105,16 @@ public class UserBusinessService {
     public UserAuthEntity accessTokenValidation(String accessToken) throws SignOutRestrictedException {
         UserAuthEntity userAuthEntity = userDao.verifyToken(accessToken);
 
-        if (userAuthEntity == null) {
+        /* Modified by Sangeeta as part of bug-fix
+         * Bug Description : If user has already signed out and provide the same access token again,
+         * the access token is considered valid even though the user has already logged out before.
+         * Bug Fix : The workaround provided here is - The access token is valid only if :
+         * 1. Access Token exists in Database.
+         * 2. The logOut time is not updated before meaning logOut time is null
+         */
+        /* Commented this code to achieve the above bug fix */
+        // if (userAuthEntity == null) {
+        if (userAuthEntity == null || (userAuthEntity != null && userAuthEntity.getLogoutAt() != null)) {
             throw new SignOutRestrictedException("SGR-001", "User is not Signed in");
 
         } else {
