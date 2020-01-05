@@ -69,4 +69,14 @@ public class UserDao {
         }
     }
 
+    //method to Delete User in Database
+    public UserEntity deleteUser(UserEntity userEntity) {
+        try {
+            entityManager.remove(userEntity);
+            return userEntity;
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
 }
