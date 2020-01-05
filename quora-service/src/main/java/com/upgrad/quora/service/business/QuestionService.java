@@ -127,6 +127,28 @@ public class QuestionService {
     }
   }
 
-  /* Upma to add the remaining two functions - deleteQuestion() and getAllQuestionsByUser() */
+  @Transactional(propagation = Propagation.REQUIRED)
+  public QuestionEntity deleteQuestion(String questionId, String accessToken) throws AuthorizationFailedException, InvalidQuestionException {
+
+    UserAuthEntity userAuthEntity = authorizationService.checkAuthorization(accessToken, "User is signed out.Sign in first to delete a question");
+    QuestionEntity questionEntity = questionDao.getQuestion(questionId);
+
+    if (questionEntity == null) {
+      throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
+    } else {
+      String loggedUserRole = userAuthEntity.getUser().getRole();
+      String questionOwner = questionEntity.getUser().getUuid();
+      String loggedUser = userAuthEntity.getUser().getUuid();
+      if (loggedUserRole.equals("admin") || loggedUser.equals(questionOwner)) {
+        return questionDao.deleteQuestion(questionEntity);
+      } else {
+        throw new AuthorizationFailedException("ATHR-003", "Only the question owner or admin can delete the question");
+
+      }
+    }
+  }
+
+
+
 
 }
