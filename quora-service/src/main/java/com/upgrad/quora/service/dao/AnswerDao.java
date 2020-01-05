@@ -1,11 +1,13 @@
 package com.upgrad.quora.service.dao;
 
 import com.upgrad.quora.service.entity.AnswerEntity;
+import com.upgrad.quora.service.entity.QuestionEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Repository
 public class AnswerDao {
@@ -59,4 +61,10 @@ public class AnswerDao {
         }
     }
 
+    public List<AnswerEntity> getAllAnswersToQuestion(String questionId) {
+        /* Get List of all answers for given question's id from the database using the given query */
+        List<AnswerEntity> answerEntities = entityManager
+                .createNamedQuery("getAllAnswersToQuestion", AnswerEntity.class).getResultList();
+        return answerEntities;
+    }
 }

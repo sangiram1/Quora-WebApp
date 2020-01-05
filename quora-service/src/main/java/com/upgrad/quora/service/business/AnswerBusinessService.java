@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Service
 public class AnswerBusinessService {
@@ -87,7 +88,7 @@ public class AnswerBusinessService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public AnswerEntity deleteAnswer(String answerId, String authorization) throws AuthorizationFailedException, AnswerNotFoundException {
+    public AnswerEntity deleteAnswer(final String answerId, final String authorization) throws AuthorizationFailedException, AnswerNotFoundException {
 
         /* Check if the authorization/accessToken provided is valid or not. It will check the below:
          *  1.1. User has provided valid access token
@@ -115,5 +116,25 @@ public class AnswerBusinessService {
             throw new AuthorizationFailedException("ATHR-003",
                     "Only the answer owner or admin can delete the answer");
         }
+    }
+
+    public List<AnswerEntity> getAllAnswersToQuestion(final String authorization, final String questionId)
+    throws AuthorizationFailedException, InvalidQuestionException{
+
+        QuestionEntity questionEntity = questionDao.getQuestion(questionId);
+
+        if (questionEntity == null) {
+            throw new InvalidQuestionException("QUES-001", "The question with entered uuid whose details are to be seen does not exist");
+        }
+
+        /* Check if the authorization/accessToken provided is valid or not. It will check the below:
+         *  1.1. User has provided valid access token
+         *  1.2. User has not signed out.
+         */
+        UserAuthEntity userAuthToken = authorizationService.checkAuthorization(authorization,
+                "User is signed out.Sign in first to get the answers");
+
+        /* Get the list of all the answers and return the same to the calling controller */
+        return answerDao.getAllAnswersToQuestion(questionId);
     }
 }

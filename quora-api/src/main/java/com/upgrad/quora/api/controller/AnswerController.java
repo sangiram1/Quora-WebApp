@@ -3,6 +3,7 @@ package com.upgrad.quora.api.controller;
 import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.AnswerBusinessService;
 import com.upgrad.quora.service.entity.AnswerEntity;
+import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.exception.AnswerNotFoundException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
@@ -12,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -74,5 +77,24 @@ public class AnswerController {
         answerDeleteResponse.id(deletedAnswer.getUuid()).status("ANSWER DELETED");
         /* return the response object back to the client*/
         return new ResponseEntity<AnswerDeleteResponse>(answerDeleteResponse, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "answer/all/{questionId}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<AnswerDetailsResponse>> getAllAnswersToQuestion (@RequestHeader("authorization") final String authorization,
+                                                                         @PathVariable("questionId") final String questionId)
+            throws AuthorizationFailedException, InvalidQuestionException {
+        /* Get the list of all the answer to given question from database if the authorization done successfully. */
+        List<AnswerEntity> answerEntities = answerBusinessService.getAllAnswersToQuestion(authorization, questionId);
+
+        /* Prepare the response with the required details from database and create a response list */
+        List<AnswerDetailsResponse> answerResponseList = new LinkedList<AnswerDetailsResponse>();
+        for (AnswerEntity answer : answerEntities) {
+            AnswerDetailsResponse answerDetailsResponse = new AnswerDetailsResponse();
+            answerDetailsResponse.id(answer.getUuid()).answerContent(answer.getAnswer()).questionContent(answer.getQuestion().getContent());
+            answerResponseList.add(answerDetailsResponse);
+        }
+        /* Return the details of questions in the form of responseList and a Httpstatus.OK to client */
+        return new ResponseEntity<List<AnswerDetailsResponse>>(answerResponseList, HttpStatus.OK);
     }
 }
