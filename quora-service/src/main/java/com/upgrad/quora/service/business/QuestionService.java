@@ -159,12 +159,12 @@ public class QuestionService {
      */
     public List<QuestionEntity> getAllQuestionsByUser(String userId, String accessToken) throws AuthorizationFailedException, UserNotFoundException {
         UserAuthEntity userAuthEntity = authorizationService.checkAuthorization(accessToken, "User is signed out.Sign in first to get all questions posted by a specific user");
-        UserEntity userEntity = userDao.getUserDetails(userId);
+        UserEntity userDetails = userDao.getUserDetails(userId);
 
-        if (userEntity == null) {
+        if (userDetails == null) {
             throw new UserNotFoundException("USR-001", "User with entered uuid whose question details are to be seen does not exist");
         } else {
-            return questionDao.getAllQuestionByUser(userId);
+            return questionDao.getAllQuestionByUser(userDetails);
         }
 
     }

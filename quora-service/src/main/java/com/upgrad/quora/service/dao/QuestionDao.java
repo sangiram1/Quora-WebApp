@@ -12,6 +12,7 @@
 package com.upgrad.quora.service.dao;
 
 import com.upgrad.quora.service.entity.QuestionEntity;
+import com.upgrad.quora.service.entity.UserEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -82,7 +83,7 @@ public class QuestionDao {
     }
 
     //This method returns all the questions posted by a user.
-    public List<QuestionEntity> getAllQuestionByUser(String userId) {
+    public List<QuestionEntity> getAllQuestionByUser(UserEntity userId) {
         try {
             return entityManager.createNamedQuery("getAllQuestionsByUser", QuestionEntity.class).setParameter("userId", userId).getResultList();
 
