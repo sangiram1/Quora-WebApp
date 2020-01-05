@@ -69,12 +69,18 @@ public class UserDao {
         }
     }
 
-    //method to Delete User in Database
+    /* Added by Ankit as part of implementing the deleteUser functionality
+     * This method will take user entity and will delete the user from the database.
+     * This method would return the User details wrapped in the UserEntity object.
+     * If the user doesn't exist, it would return null.
+     */
     public UserEntity deleteUser(UserEntity userEntity) {
         try {
+            // Remove the user from the database
             entityManager.remove(userEntity);
             return userEntity;
         } catch (NoResultException nre) {
+            // If user doesn't exist, return null to the service
             return null;
         }
     }

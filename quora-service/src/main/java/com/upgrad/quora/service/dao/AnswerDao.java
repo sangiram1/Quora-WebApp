@@ -1,7 +1,16 @@
+/* Created by Ankit as part of developing DAO classes for implementing given functionalities
+ * This DAO has different method to handle different interactions with Database.
+ * Below is list of all the methods and their respective functionality:
+ * 1. createAnswer() method would persist the answer to the database
+ * 2. getAnswer() method would fetch the details of a given answer id
+ * 4. updateAnswer() method would update the given answer
+ * 5. deleteAnswer() method would delete the given answer
+ * 6. getAllAnswersToQuestion() method would fetch the details of all the answer per question
+ */
+
 package com.upgrad.quora.service.dao;
 
 import com.upgrad.quora.service.entity.AnswerEntity;
-import com.upgrad.quora.service.entity.QuestionEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -15,9 +24,9 @@ public class AnswerDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-    /* createAnswer() method would persist the answer to the database
-     * This method would take the answerEntity object as input and persist it to database
-     * It would return the persisted answerEntity object back to the service layer with ID details
+
+    /* createAnswer() method would take the answerEntity object as input and persist it to database
+     *  It would return the persisted answerEntity object back to the service layer with ID details
      */
     public AnswerEntity createAnswer(AnswerEntity answerEntity) {
         /* Save the answerEntity to the database */
@@ -51,16 +60,25 @@ public class AnswerDao {
         return answerToBeUpdated;
     }
 
-    //method to Delete Answer in Database
+    /* deleteAnswer() method would delete the given answer from database
+     * This method would take the answerEntity object as input
+     * The deleted entity object is returned to the service layer if exists in database.
+     */
     public AnswerEntity deleteAnswer(AnswerEntity answerEntity) {
         try {
+            /* Delete the entity object from the database */
             entityManager.remove(answerEntity);
             return answerEntity;
-        } catch(NoResultException nre) {
+        } catch (NoResultException nre) {
+            /* Return null if answer doesn't exist */
             return null;
         }
     }
 
+    /* getAllAnswersToQuestion() method would fetch the details of all given answers to particular question
+     * It uses the NamedQuery getAllAnswersToQuestion and return details of all the given answers
+     * List of answerEntity is returned to the service layer
+     */
     public List<AnswerEntity> getAllAnswersToQuestion(String questionId) {
         /* Get List of all answers for given question's id from the database using the given query */
         List<AnswerEntity> answerEntities = entityManager

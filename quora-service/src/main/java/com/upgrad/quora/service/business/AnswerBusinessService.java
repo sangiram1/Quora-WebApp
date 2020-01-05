@@ -1,3 +1,12 @@
+/* Created by Ankit as part of developing Service classes for implementing given functionalities
+ * This service has different method to handle different business logic.
+ * Below is list of all the methods and their respective functionality:
+ * 1. createAnswer() method would facilitate the creation of a answer in database
+ * 2. editAnswerContent() method would facilitate the update a given answer
+ * 3. deleteAnswer() method would facilitate the deletion of a given answer.
+ * 4. getAllAnswersToQuestion() method would furnish the details of all the answers per question
+ */
+
 package com.upgrad.quora.service.business;
 
 import com.upgrad.quora.service.dao.AnswerDao;
@@ -29,10 +38,19 @@ public class AnswerBusinessService {
     @Autowired
     private AuthorizationService authorizationService;
 
+    /* createAnswer() method would facilitate the creation of a answer for given question in database
+     * This method would take three inputs : the authorization string for user authorization
+     * and a answerEntity object which holds the details of a answer to be persisted
+     * and a string of questionId for which answer has to be created
+     * It would return the persisted object back to the calling controller.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public AnswerEntity createAnswer(AnswerEntity answerEntity, final String questionId,
-                                     final String authorization) throws AuthorizationFailedException, InvalidQuestionException {
-
+                                     final String authorization)
+            throws AuthorizationFailedException, InvalidQuestionException {
+        /*
+         * Get the question entity from given question id or throw exception if does not exist
+         */
         QuestionEntity questionEntity = questionDao.getQuestion(questionId);
 
         if (questionEntity == null) {
@@ -46,7 +64,9 @@ public class AnswerBusinessService {
         UserAuthEntity userAuthToken = authorizationService.checkAuthorization(authorization,
                 "User is signed out.Sign in first to post an answer");
 
-        /* Update the question, user and datetime on the answer and persist it to DB with the given details */
+        /* Update the details as user, question and datetime on the answer entity and persist it to
+         * DB with the given details
+         */
         answerEntity.setUser(userAuthToken.getUser());
         answerEntity.setDate(ZonedDateTime.now());
         answerEntity.setQuestion(questionEntity);
@@ -54,9 +74,16 @@ public class AnswerBusinessService {
         return answerDao.createAnswer(answerEntity);
     }
 
+    /* editAnswerContent() method would facilitate the update of a answer in database
+     * This method would take three inputs : the authorization string for user authorization
+     * and a answerContent string which holds updated answer
+     * and a answerId string for which answer has to be updated
+     * It would return the persisted object back to the calling controller.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public AnswerEntity editAnswerContent(final String answerId, final String answerContent,
-                                          final String authorization) throws AuthorizationFailedException, AnswerNotFoundException {
+                                          final String authorization)
+            throws AuthorizationFailedException, AnswerNotFoundException {
 
         /* Check if the authorization/accessToken provided is valid or not. It will check the below:
          *  1.1. User has provided valid access token
@@ -87,8 +114,14 @@ public class AnswerBusinessService {
         }
     }
 
+    /* deleteAnswer() method would facilitate the deletion of a answer in database
+     * This method would take two inputs : the authorization string for user authorization
+     * and a answerId string of which answer data has to be deleted
+     * It would return the deleted object data back to the calling controller.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
-    public AnswerEntity deleteAnswer(final String answerId, final String authorization) throws AuthorizationFailedException, AnswerNotFoundException {
+    public AnswerEntity deleteAnswer(final String answerId, final String authorization)
+            throws AuthorizationFailedException, AnswerNotFoundException {
 
         /* Check if the authorization/accessToken provided is valid or not. It will check the below:
          *  1.1. User has provided valid access token
@@ -118,13 +151,22 @@ public class AnswerBusinessService {
         }
     }
 
+    /* getAllAnswersToQuestion() method would facilitate the fetch all the answers for a question in database
+     * This method would take two inputs : the authorization string for user authorization
+     * and a questionId string of which answers have to be fetched
+     * It would return the list of answer entity objects back to the calling controller.
+     */
     public List<AnswerEntity> getAllAnswersToQuestion(final String authorization, final String questionId)
-    throws AuthorizationFailedException, InvalidQuestionException{
+            throws AuthorizationFailedException, InvalidQuestionException {
 
+        /*
+         * Get the question entity from given question id or throw exception if does not exist
+         */
         QuestionEntity questionEntity = questionDao.getQuestion(questionId);
 
         if (questionEntity == null) {
-            throw new InvalidQuestionException("QUES-001", "The question with entered uuid whose details are to be seen does not exist");
+            throw new InvalidQuestionException("QUES-001",
+                    "The question with entered uuid whose details are to be seen does not exist");
         }
 
         /* Check if the authorization/accessToken provided is valid or not. It will check the below:
