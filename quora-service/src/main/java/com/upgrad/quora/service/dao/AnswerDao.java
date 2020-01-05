@@ -11,7 +11,9 @@
 package com.upgrad.quora.service.dao;
 
 import com.upgrad.quora.service.entity.AnswerEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import sun.util.locale.StringTokenIterator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -24,7 +26,8 @@ public class AnswerDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-
+    @Autowired
+    private QuestionDao questionDao;
     /* createAnswer() method would take the answerEntity object as input and persist it to database
      *  It would return the persisted answerEntity object back to the service layer with ID details
      */
@@ -82,7 +85,8 @@ public class AnswerDao {
     public List<AnswerEntity> getAllAnswersToQuestion(String questionId) {
         /* Get List of all answers for given question's id from the database using the given query */
         List<AnswerEntity> answerEntities = entityManager
-                .createNamedQuery("getAllAnswersToQuestion", AnswerEntity.class).getResultList();
+                .createNamedQuery("getAllAnswersToQuestion", AnswerEntity.class)
+                .setParameter("question", questionDao.getQuestion(questionId)).getResultList();
         return answerEntities;
     }
 }
