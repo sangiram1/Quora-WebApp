@@ -3,7 +3,6 @@ package com.upgrad.quora.api.controller;
 import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.AnswerBusinessService;
 import com.upgrad.quora.service.entity.AnswerEntity;
-import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.exception.AnswerNotFoundException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
@@ -49,15 +48,31 @@ public class AnswerController {
                                                                 final AnswerEditRequest answerEditRequest)
             throws AuthorizationFailedException, AnswerNotFoundException {
 
-        /* Call the editQuestionContent from service to update the question with given content */
+        /* Call the editAnswerContent from service to update the answer with given content */
         String answerContent = answerEditRequest.getContent();
         AnswerEntity updatedAnswer = answerBusinessService.editAnswerContent(answerId,
                 answerContent, authorization);
 
-        /* Once the question is updated, prepare the response with UUID and a status message */
+        /* Once the answer is updated, prepare the response with UUID and a status message */
         AnswerEditResponse answerEditResponse = new AnswerEditResponse();
         answerEditResponse.id(updatedAnswer.getUuid()).status("ANSWER EDITED");
         /* return the response object back to the client*/
         return new ResponseEntity<AnswerEditResponse>(answerEditResponse, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, path = "/answer/delete/{answerId}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<AnswerDeleteResponse> deleteAnswer(@RequestHeader("authorization") final String authorization,
+                                                             @PathVariable("answerId") final String answerId)
+            throws AuthorizationFailedException, AnswerNotFoundException {
+
+        /* Call the deleteAnswer from service to delete the answer*/
+        AnswerEntity deletedAnswer = answerBusinessService.deleteAnswer(answerId, authorization);
+
+        /* Once the answer is deleted, prepare the response with UUID and a status message */
+        AnswerDeleteResponse answerDeleteResponse = new AnswerDeleteResponse();
+        answerDeleteResponse.id(deletedAnswer.getUuid()).status("ANSWER DELETED");
+        /* return the response object back to the client*/
+        return new ResponseEntity<AnswerDeleteResponse>(answerDeleteResponse, HttpStatus.OK);
     }
 }

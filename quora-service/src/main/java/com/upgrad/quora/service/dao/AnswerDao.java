@@ -1,7 +1,6 @@
 package com.upgrad.quora.service.dao;
 
 import com.upgrad.quora.service.entity.AnswerEntity;
-import com.upgrad.quora.service.entity.QuestionEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -48,6 +47,16 @@ public class AnswerDao {
         /* Merge the entity object to the database */
         entityManager.merge(answerToBeUpdated);
         return answerToBeUpdated;
+    }
+
+    //method to Delete Answer in Database
+    public AnswerEntity deleteAnswer(AnswerEntity answerEntity) {
+        try {
+            entityManager.remove(answerEntity);
+            return answerEntity;
+        } catch(NoResultException nre) {
+            return null;
+        }
     }
 
 }
