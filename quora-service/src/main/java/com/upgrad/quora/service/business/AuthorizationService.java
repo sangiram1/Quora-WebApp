@@ -16,33 +16,33 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthorizationService {
 
-  /* Autowired the userDao to get the access token verified from database */
-  @Autowired
-  private UserDao userDao;
+    /* Autowired the userDao to get the access token verified from database */
+    @Autowired
+    private UserDao userDao;
 
-  /* checkAuthorization method takes accessToken and an exceptionMessage in case */
-  public UserAuthEntity checkAuthorization(final String authorization, final String exceptionMessage)
-      throws AuthorizationFailedException {
+    /* checkAuthorization method takes accessToken and an exceptionMessage in case */
+    public UserAuthEntity checkAuthorization(final String authorization, final String exceptionMessage)
+            throws AuthorizationFailedException {
 
-    /* This will verify if the given authorization token is valid and exists in database */
-    UserAuthEntity userAuthToken = userDao.verifyToken(authorization);
+        /* This will verify if the given authorization token is valid and exists in database */
+        UserAuthEntity userAuthToken = userDao.verifyToken(authorization);
 
-    /* If the token doesn't exist, it will throw AuthorizationFailedException
-     * saying User has not signed in.
-     */
-    if (userAuthToken == null) {
-      throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        /* If the token doesn't exist, it will throw AuthorizationFailedException
+         * saying User has not signed in.
+         */
+        if (userAuthToken == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+
+        /* If the user has already logged out, it will throw AuthorizationFailedException
+         * saying User has signed out. To perform any action, sign in is needed first.
+         */
+        if (userAuthToken.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("ATHR-002", exceptionMessage);
+        }
+
+        /* Return the UserAuthToken object if the above validation passes */
+        return userAuthToken;
     }
-
-    /* If the user has already logged out, it will throw AuthorizationFailedException
-     * saying User has signed out. To perform any action, sign in is needed first.
-     */
-    if (userAuthToken.getLogoutAt() != null) {
-      throw new AuthorizationFailedException("ATHR-002", exceptionMessage);
-    }
-
-    /* Return the UserAuthToken object if the above validation passes */
-    return userAuthToken;
-  }
 
 }

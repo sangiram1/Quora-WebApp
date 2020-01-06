@@ -24,6 +24,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -35,10 +36,9 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(name = "user_auth")
 @NamedQueries({
-    @NamedQuery(name = "userAuthTokenByAccessToken", query = "select ut from UserAuthEntity ut "
-        + "where ut.accessToken =:accessToken")
+        @NamedQuery(name = "userAuthTokenByAccessToken", query = "select ut from UserAuthEntity ut where ut.accessToken =:accessToken")
 })
-public class UserAuthEntity implements Serializable{
+public class UserAuthEntity implements Serializable {
 
     /* Attribute id corresponds to field ID - primary key in user_auth table */
     @Id

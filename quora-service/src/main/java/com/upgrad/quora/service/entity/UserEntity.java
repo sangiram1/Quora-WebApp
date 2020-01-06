@@ -19,6 +19,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -29,13 +30,12 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Entity
 @Table(name = "users")
 @NamedQueries({
-    @NamedQuery(name = "userByUsername", query = "select  u from UserEntity u where u.username "
-        + "= :username"),
-    @NamedQuery(name = "userByEmail", query = "select  u from UserEntity u where u.email = :email"),
-    @NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid = :uuid")
+        @NamedQuery(name = "userByUsername", query = "select  u from UserEntity u where u.username = :username"),
+        @NamedQuery(name = "userByEmail", query = "select  u from UserEntity u where u.email = :email"),
+        @NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid = :uuid")
 })
 
-public class UserEntity implements Serializable{
+public class UserEntity implements Serializable {
 
     /* Attribute id corresponds to field ID - primary key in users table */
     @Id

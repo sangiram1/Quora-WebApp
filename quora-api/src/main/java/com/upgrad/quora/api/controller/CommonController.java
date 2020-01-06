@@ -29,35 +29,34 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class CommonController {
 
-  /* This annotation is used to call business logic in the service layer for fetching user details*/
-  @Autowired
-  private UserBusinessService userBusinessService;
+    /* This annotation is used to call business logic in the service layer for fetching user details*/
+    @Autowired
+    private UserBusinessService userBusinessService;
 
-  /* Method representing userProfile endpoint which would serve the request /userprofile/{userId}
-   * The userProfile method would take the authorization string from the Request Header as input
-   * and also the userId in the form of UUID to pull the user details.
-   */
-  @RequestMapping(method = RequestMethod.GET, path = "/userprofile/{userId}",
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public ResponseEntity<UserDetailsResponse> userProfile(@RequestHeader("authorization")
-  final String authorization, @PathVariable("userId") final String userId)
-      throws AuthorizationFailedException, UserNotFoundException {
+    /* Method representing userProfile endpoint which would serve the request /userprofile/{userId}
+     * The userProfile method would take the authorization string from the Request Header as input
+     * and also the userId in the form of UUID to pull the user details.
+     */
+    @RequestMapping(method = RequestMethod.GET, path = "/userprofile/{userId}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<UserDetailsResponse> userProfile(@RequestHeader("authorization") final String authorization, @PathVariable("userId") final String userId)
+            throws AuthorizationFailedException, UserNotFoundException {
 
-    /* Call the getUserDetails method to get the details of the given user */
-    UserEntity userDetails = userBusinessService.getUserDetails(userId, authorization);
+        /* Call the getUserDetails method to get the details of the given user */
+        UserEntity userDetails = userBusinessService.getUserDetails(userId, authorization);
 
-    /* Build the userDetailsResponse object with the required attributes of the UserEntity object */
-    UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
-    userDetailsResponse.firstName(userDetails.getFirstName());
-    userDetailsResponse.lastName(userDetails.getLastName());
-    userDetailsResponse.userName(userDetails.getUsername());
-    userDetailsResponse.emailAddress(userDetails.getEmail());
-    userDetailsResponse.country(userDetails.getCountry());
-    userDetailsResponse.aboutMe(userDetails.getAboutMe());
-    userDetailsResponse.dob(userDetails.getDob());
-    userDetailsResponse.contactNumber(userDetails.getContactNumber());
+        /* Build the userDetailsResponse object with the required attributes of the UserEntity object */
+        UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
+        userDetailsResponse.firstName(userDetails.getFirstName());
+        userDetailsResponse.lastName(userDetails.getLastName());
+        userDetailsResponse.userName(userDetails.getUsername());
+        userDetailsResponse.emailAddress(userDetails.getEmail());
+        userDetailsResponse.country(userDetails.getCountry());
+        userDetailsResponse.aboutMe(userDetails.getAboutMe());
+        userDetailsResponse.dob(userDetails.getDob());
+        userDetailsResponse.contactNumber(userDetails.getContactNumber());
 
-    /* Adding the userDetailsResponse and the relevant HttpStatus status to ResponseEntity */
-    return new ResponseEntity<UserDetailsResponse>(userDetailsResponse, HttpStatus.OK);
-  }
+        /* Adding the userDetailsResponse and the relevant HttpStatus status to ResponseEntity */
+        return new ResponseEntity<UserDetailsResponse>(userDetailsResponse, HttpStatus.OK);
+    }
 }

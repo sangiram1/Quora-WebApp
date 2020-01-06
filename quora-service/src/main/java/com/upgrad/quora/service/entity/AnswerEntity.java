@@ -23,6 +23,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -34,10 +35,8 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(name = "answer")
 @NamedQueries({
-    @NamedQuery(name = "getAnswerByUuid", query = "select a from AnswerEntity a where "
-        + "a.uuid = :uuid"),
-    @NamedQuery(name = "getAllAnswersToQuestion", query = "select a from AnswerEntity a where "
-        + "a.question = :question")
+        @NamedQuery(name = "getAnswerByUuid", query = "select a from AnswerEntity a where a.uuid = :uuid"),
+        @NamedQuery(name = "getAllAnswersToQuestion", query = "select a from AnswerEntity a where a.question = :question")
 })
 public class AnswerEntity implements Serializable {
 
