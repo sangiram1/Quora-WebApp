@@ -102,13 +102,22 @@ public class QuestionController {
         return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
     }
 
-
+    /*This method is an endpoint which accepts the delete request /question/delete/{questionId} with parameter questionId
+     *This method internally calls the business layer and verifies the authenticity of the user
+     *If the user is the Owner or admin then the question is deleted form the database
+     *After deleting the request it send back the response in Jason format.
+     */
     @RequestMapping(method = RequestMethod.DELETE, path = "/question/delete/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@PathVariable("questionId") String questionId, @RequestHeader("authorization") String accessToken) throws AuthorizationFailedException, InvalidQuestionException {
         QuestionEntity questionEntity = questionService.deleteQuestion(questionId, accessToken);
         return new ResponseEntity<QuestionDeleteResponse>(new QuestionDeleteResponse().id(questionEntity.getUuid()).status("QUESTION DELETED"), HttpStatus.OK);
     }
 
+
+    /*This endpoint accepts the get request question/all/{userId} with parameter userId
+     *This endpoint internally calls the Business layer to verify the user token
+     *If the token and user is valid all the questions posted by the user are returned.
+     */
     @RequestMapping(method = RequestMethod.GET, path = "question/all/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(@PathVariable("userId") String userId, @RequestHeader("authorization") String accessToken) throws AuthorizationFailedException, UserNotFoundException {
         List<QuestionEntity> listOfQuestions = questionService.getAllQuestionsByUser(userId, accessToken);

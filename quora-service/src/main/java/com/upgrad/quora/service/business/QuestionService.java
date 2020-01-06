@@ -128,6 +128,10 @@ public class QuestionService {
         }
     }
 
+    /*deleteQuestion functions takes in the parameter of question id to be deleted and the access token
+     *This functions verifies the token and checks if the access token is valid
+     * It also checks the business logic where only either the owner or the admin can delete the question
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity deleteQuestion(String questionId, String accessToken) throws AuthorizationFailedException, InvalidQuestionException {
 
@@ -149,14 +153,18 @@ public class QuestionService {
         }
     }
 
+    /*getAllQuestionsByUser takes in the parameter of user id
+     *Based on user user id it retrieves the questions posted by that user.
+     * It also check some validation of access token and if the user id exists in teh database
+     */
     public List<QuestionEntity> getAllQuestionsByUser(String userId, String accessToken) throws AuthorizationFailedException, UserNotFoundException {
         UserAuthEntity userAuthEntity = authorizationService.checkAuthorization(accessToken, "User is signed out.Sign in first to get all questions posted by a specific user");
-        UserEntity userEntity = userDao.getUserDetails(userId);
+        UserEntity userDetails = userDao.getUserDetails(userId);
 
-        if (userEntity == null) {
+        if (userDetails == null) {
             throw new UserNotFoundException("USR-001", "User with entered uuid whose question details are to be seen does not exist");
         } else {
-            return questionDao.getAllQuestionByUser(userId);
+            return questionDao.getAllQuestionByUser(userDetails);
         }
 
     }

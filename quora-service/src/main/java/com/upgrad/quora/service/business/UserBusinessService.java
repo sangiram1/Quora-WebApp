@@ -30,6 +30,11 @@ public class UserBusinessService {
     @Autowired
     private AuthorizationService authorizationService;
 
+    /*createUser function facilitates teh creation of user in database.
+     *It checks few validations
+     * if the username or email already exists than it will through exceptions.
+     * Otherwise it will encrypt the password and and post it to database.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public UserEntity createUser(UserEntity userEntity) throws SignUpRestrictedException {
 
@@ -46,6 +51,7 @@ public class UserBusinessService {
 
         } else {
 
+            //Encrypting the password and adding salt to it for better security
             String encryptedText[] = cryptographyProvider.encrypt(userEntity.getPassword());
             userEntity.setSalt(encryptedText[0]);
             userEntity.setPassword(encryptedText[1]);
@@ -54,6 +60,11 @@ public class UserBusinessService {
 
     }
 
+    /*userAuthentication is the function to verify if the correct user is trying to login.
+     *It validates the username and the password provided by the user.
+     * If the validation is passed JWT token is generated and is stored in the database
+     *This JWT token is further used to access the endpoints at later stage by the user.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public UserAuthEntity userAuthentication(String username, String password) throws AuthenticationFailedException {
 
@@ -85,11 +96,25 @@ public class UserBusinessService {
     }
 
 
+    /*The accessToken Validation function facilitates the sigout process of the user.
+     *It validates the access token of the user
+     * It the access token is valid then the user is able to successfully logout
+     */
+
     @Transactional(propagation = Propagation.REQUIRED)
     public UserAuthEntity accessTokenValidation(String accessToken) throws SignOutRestrictedException {
         UserAuthEntity userAuthEntity = userDao.verifyToken(accessToken);
 
-        if (userAuthEntity == null) {
+        /* Modified by Sangeeta as part of bug-fix
+         * Bug Description : If user has already signed out and provide the same access token again,
+         * the access token is considered valid even though the user has already logged out before.
+         * Bug Fix : The workaround provided here is - The access token is valid only if :
+         * 1. Access Token exists in Database.
+         * 2. The logOut time is not updated before meaning logOut time is null
+         */
+        /* Commented this code to achieve the above bug fix */
+        // if (userAuthEntity == null) {
+        if (userAuthEntity == null || (userAuthEntity != null && userAuthEntity.getLogoutAt() != null)) {
             throw new SignOutRestrictedException("SGR-001", "User is not Signed in");
 
         } else {

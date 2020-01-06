@@ -15,7 +15,7 @@ public class UserDao {
     @PersistenceContext
     EntityManager entityManager;
 
-    //method to Persist User details in Database
+    //This method is to Persist User details in database and returns the user entity back to the business layer for processing
     public UserEntity createUser(UserEntity userEntity) {
         entityManager.persist(userEntity);
         return userEntity;
@@ -39,11 +39,13 @@ public class UserDao {
         }
     }
 
+    //This method persists the generated JWT token in database.
     public void createToken(UserAuthEntity userAuthEntity) {
         entityManager.persist(userAuthEntity);
     }
 
 
+    //This method takes in the parameter of access token and verifies from database if its a valid token.
     public UserAuthEntity verifyToken(String accessToken) {
         try {
             return entityManager.createNamedQuery("userAuthTokenByAccessToken", UserAuthEntity.class).setParameter("accessToken", accessToken).getSingleResult();
